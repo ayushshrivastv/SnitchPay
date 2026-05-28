@@ -1,0 +1,21 @@
+[package]
+name = "invoice"
+version = "0.1.0"
+description = "Snitch invoice program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "invoice"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
