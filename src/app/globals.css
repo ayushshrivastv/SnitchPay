@@ -11,7 +11,8 @@
   --brand-purple-soft: #f1e7ff;
   --brand-orange: #ff7a2f;
   --brand-orange-soft: #fff0e7;
-  --snitch-grid: oklch(0.913 0 286.3);
+  --snitch-grid: oklch(0.945 0 286.3);
+  --snitch-side-grid: oklch(0.915 0 286.3);
   --snitch-subtle: oklch(0.711 0 286.1);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -196,10 +197,19 @@ body {
 
 @layer utilities {
   .snitch-grid {
+    background-color: var(--background);
     background-image:
       linear-gradient(to right, var(--snitch-grid) 1px, transparent 1px),
       linear-gradient(to bottom, var(--snitch-grid) 1px, transparent 1px);
     background-position: left top;
+    background-size: 54px 54px;
+  }
+
+  .snitch-side-grid {
+    background-image:
+      linear-gradient(to right, var(--snitch-side-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--snitch-side-grid) 1px, transparent 1px);
+    background-position: center top;
     background-size: 54px 54px;
   }
 
