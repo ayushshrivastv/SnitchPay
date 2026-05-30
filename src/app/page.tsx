@@ -5003,10 +5003,14 @@ function PlaygroundNoticeDialog({
               id="playground-notice-description"
               className="mt-2 text-sm leading-6 text-muted-foreground"
             >
-              This project was built for the Solana India Fellowship. The hosted
-              deployment is a product playground, and API calls are not currently
-              running on deployment. To test the full Solana features, clone the
-              repository and start the localnet Anchor environment.
+              This project was built for the{" "}
+              <span className="rounded-md bg-purple-100 px-1.5 py-0.5 font-medium text-purple-800">
+                Solana India Fellowship
+              </span>
+              . The hosted deployment is a product playground, and API calls are
+              not currently running on deployment. To test the full Solana
+              features, clone the repository and start the localnet Anchor
+              environment.
             </p>
           </div>
         </div>
@@ -5018,8 +5022,8 @@ function PlaygroundNoticeDialog({
             className="mt-0.5"
           />
           <span>
-            I understand this hosted version is a playground and localnet is
-            required for full feature testing.
+            I understand this hosted version is a playground, and full feature
+            testing requires running the project locally with Solana localnet.
           </span>
         </label>
 
