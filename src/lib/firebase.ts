@@ -1,6 +1,11 @@
 import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey:
@@ -36,4 +41,8 @@ export const firebaseAnalytics: Promise<Analytics | null> =
 
 export function signInWithGoogle() {
   return signInWithPopup(firebaseAuth, googleAuthProvider);
+}
+
+export function signOutOfGoogle() {
+  return signOut(firebaseAuth);
 }

@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { signInWithGoogle } from "@/lib/firebase";
+import { signInWithGoogle, signOutOfGoogle } from "@/lib/firebase";
 
 import {
   AlertCircle,
@@ -1953,6 +1953,16 @@ function SidebarNavButton({
 function SidebarUserMenu() {
   const [open, setOpen] = useState(false);
 
+  const handleLogout = async () => {
+    try {
+      await signOutOfGoogle();
+    } catch {
+      // Local demo fallback still logs out of the playground UI.
+    }
+
+    window.location.href = "/";
+  };
+
   return (
     <div className="grid gap-2 px-1">
       <button
@@ -1977,6 +1987,7 @@ function SidebarUserMenu() {
       {open ? (
         <button
           type="button"
+          onClick={handleLogout}
           className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[1rem] bg-[#171717] px-3 text-xs font-medium text-white transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <LogOut className="size-4" strokeWidth={2.1} aria-hidden="true" />
