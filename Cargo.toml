@@ -2,7 +2,8 @@
 members = [
   "programs/invoice",
   "programs/payout",
-  "programs/shared_wallet"
+  "programs/shared_wallet",
+  "programs/vault"
 ]
 resolver = "2"
 

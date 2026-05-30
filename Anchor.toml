@@ -6,11 +6,13 @@ skip-lint = false
 invoice = "8NNrnYjuajHC2jRLAaw5PYeahqRsDrRSzsZNXkTD8LES"
 payout = "57aDA46BSyuGSfoW1DZLyTDTk46KatGsktGKTNzVCQ9y"
 shared_wallet = "HK6ZtxWZSPjHFZWuJuvLZfKCJDB7ZEPWQe1GpMn8CVSG"
+vault = "72rGhJDuuNk9ggmmRRpY3gvTSyBngWu9jCAdnpHh9fv9"
 
 [programs.devnet]
 invoice = "8NNrnYjuajHC2jRLAaw5PYeahqRsDrRSzsZNXkTD8LES"
 payout = "57aDA46BSyuGSfoW1DZLyTDTk46KatGsktGKTNzVCQ9y"
 shared_wallet = "HK6ZtxWZSPjHFZWuJuvLZfKCJDB7ZEPWQe1GpMn8CVSG"
+vault = "72rGhJDuuNk9ggmmRRpY3gvTSyBngWu9jCAdnpHh9fv9"
 
 [registry]
 url = "https://api.apr.dev"

@@ -30,6 +30,11 @@ export const SHARED_WALLET_PROGRAM_ID = new PublicKey(
     "HK6ZtxWZSPjHFZWuJuvLZfKCJDB7ZEPWQe1GpMn8CVSG",
 );
 
+export const VAULT_PROGRAM_ID = new PublicKey(
+  process.env.NEXT_PUBLIC_SNITCH_VAULT_PROGRAM_ID ??
+    "72rGhJDuuNk9ggmmRRpY3gvTSyBngWu9jCAdnpHh9fv9",
+);
+
 export type SnitchWallet = {
   publicKey: PublicKey | null;
   signTransaction: <T extends Transaction | VersionedTransaction>(transaction: T) => Promise<T>;

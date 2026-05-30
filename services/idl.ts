@@ -3,6 +3,7 @@ import {
   INVOICE_PROGRAM_ID,
   PAYOUT_PROGRAM_ID,
   SHARED_WALLET_PROGRAM_ID,
+  VAULT_PROGRAM_ID,
 } from "./solana";
 
 export const invoiceIdl = {
@@ -265,6 +266,140 @@ export const sharedWalletIdl = {
       type: {
         kind: "enum",
         variants: [{ name: "Owner" }, { name: "Admin" }, { name: "Member" }],
+      },
+    },
+  ],
+} satisfies Idl;
+
+export const vaultIdl = {
+  address: VAULT_PROGRAM_ID.toBase58(),
+  metadata: { name: "vault", version: "0.1.0", spec: "0.1.0" },
+  instructions: [
+    {
+      name: "initialize_vault",
+      discriminator: [48, 191, 163, 44, 71, 129, 63, 164],
+      accounts: [
+        { name: "vault", writable: true },
+        { name: "vault_authority" },
+        { name: "vault_token", writable: true },
+        { name: "owner_member", writable: true },
+        { name: "mint" },
+        { name: "owner", writable: true, signer: true },
+        { name: "token_program", address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
+        { name: "system_program", address: "11111111111111111111111111111111" },
+        { name: "rent", address: "SysvarRent111111111111111111111111111111111" },
+      ],
+      args: [{ name: "name", type: "string" }],
+    },
+    {
+      name: "add_member",
+      discriminator: [13, 116, 123, 130, 126, 198, 57, 34],
+      accounts: [
+        { name: "vault" },
+        { name: "authority_member" },
+        { name: "member", writable: true },
+        { name: "authority", writable: true, signer: true },
+        { name: "system_program", address: "11111111111111111111111111111111" },
+      ],
+      args: [
+        { name: "user", type: "pubkey" },
+        { name: "role", type: { defined: { name: "VaultRole" } } },
+      ],
+    },
+    {
+      name: "update_member_role",
+      discriminator: [252, 36, 202, 222, 22, 168, 39, 69],
+      accounts: [
+        { name: "vault" },
+        { name: "authority_member" },
+        { name: "member", writable: true },
+        { name: "authority", signer: true },
+      ],
+      args: [{ name: "role", type: { defined: { name: "VaultRole" } } }],
+    },
+    {
+      name: "set_paused",
+      discriminator: [91, 60, 125, 192, 176, 225, 166, 218],
+      accounts: [
+        { name: "vault", writable: true },
+        { name: "owner", signer: true },
+      ],
+      args: [{ name: "paused", type: "bool" }],
+    },
+    {
+      name: "deposit",
+      discriminator: [242, 35, 198, 137, 82, 225, 242, 182],
+      accounts: [
+        { name: "vault", writable: true },
+        { name: "member" },
+        { name: "depositor", signer: true },
+        { name: "depositor_token", writable: true },
+        { name: "vault_token", writable: true },
+        { name: "vault_authority" },
+        { name: "token_program", address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
+      ],
+      args: [{ name: "amount", type: "u64" }],
+    },
+    {
+      name: "withdraw",
+      discriminator: [183, 18, 70, 156, 148, 109, 161, 34],
+      accounts: [
+        { name: "vault", writable: true },
+        { name: "authority_member" },
+        { name: "authority", signer: true },
+        { name: "vault_token", writable: true },
+        { name: "vault_authority" },
+        { name: "recipient_token", writable: true },
+        { name: "token_program", address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
+      ],
+      args: [{ name: "amount", type: "u64" }],
+    },
+  ],
+  accounts: [
+    { name: "Vault", discriminator: [211, 8, 232, 43, 2, 152, 117, 119] },
+    { name: "VaultMember", discriminator: [26, 195, 159, 142, 38, 12, 117, 218] },
+  ],
+  types: [
+    {
+      name: "Vault",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "owner", type: "pubkey" },
+          { name: "mint", type: "pubkey" },
+          { name: "vault_token", type: "pubkey" },
+          { name: "name", type: "string" },
+          { name: "total_deposited", type: "u64" },
+          { name: "total_withdrawn", type: "u64" },
+          { name: "created_at", type: "i64" },
+          { name: "paused", type: "bool" },
+          { name: "bump", type: "u8" },
+          { name: "vault_authority_bump", type: "u8" },
+        ],
+      },
+    },
+    {
+      name: "VaultMember",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "vault", type: "pubkey" },
+          { name: "user", type: "pubkey" },
+          { name: "role", type: { defined: { name: "VaultRole" } } },
+          { name: "bump", type: "u8" },
+        ],
+      },
+    },
+    {
+      name: "VaultRole",
+      type: {
+        kind: "enum",
+        variants: [
+          { name: "Owner" },
+          { name: "Admin" },
+          { name: "Member" },
+          { name: "Viewer" },
+        ],
       },
     },
   ],
