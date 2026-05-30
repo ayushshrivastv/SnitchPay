@@ -4743,6 +4743,28 @@ function LandingPage() {
       await signInWithGoogle();
       window.location.href = "/?login=1";
     } catch (error) {
+      const errorCode =
+        typeof error === "object" && error && "code" in error
+          ? String(error.code)
+          : "";
+
+      if (errorCode === "auth/unauthorized-domain") {
+        const isLocalDemoHost =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1" ||
+          window.location.hostname.startsWith("192.168.");
+
+        if (isLocalDemoHost) {
+          window.location.href = "/?login=1";
+          return;
+        }
+
+        setGoogleAuthError(
+          `Add ${window.location.hostname} to Firebase Authentication authorized domains.`,
+        );
+        return;
+      }
+
       const message =
         error instanceof Error
           ? error.message
@@ -4791,9 +4813,9 @@ function LandingPage() {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="mt-8 inline-flex h-[76px] w-full max-w-[580px] items-center justify-center gap-6 rounded-[28px] border border-[#dadce0] bg-white px-6 text-[1.45rem] font-medium text-[#202124] shadow-sm transition hover:bg-[#f8fafd] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 max-sm:h-14 max-sm:max-w-full max-sm:gap-3 max-sm:text-base"
+          className="mt-6 inline-flex h-11 items-center justify-center gap-3 rounded-full border border-[#dadce0] bg-white px-5 text-base font-medium text-[#202124] shadow-sm transition hover:bg-[#f8fafd] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <GoogleLogoIcon className="size-6 shrink-0 max-sm:size-5" />
+          <GoogleLogoIcon className="size-5 shrink-0" />
           Sign in with Google
         </button>
         {googleAuthError ? (
