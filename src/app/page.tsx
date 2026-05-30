@@ -4959,8 +4959,78 @@ function LandingPage() {
   );
 }
 
+function PlaygroundNoticeDialog({
+  acknowledged,
+  onAcknowledgedChange,
+  onContinue,
+}: {
+  acknowledged: boolean;
+  onAcknowledgedChange: (checked: boolean) => void;
+  onContinue: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/35 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="playground-notice-title"
+      aria-describedby="playground-notice-description"
+    >
+      <div className="w-full max-w-[520px] rounded-xl bg-background p-6 text-left shadow-2xl">
+        <div className="flex items-start gap-3">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
+            <ShieldCheck className="size-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <h2
+              id="playground-notice-title"
+              className="text-xl font-medium tracking-[-0.03em]"
+            >
+              You are entering the Snitch playground
+            </h2>
+            <p
+              id="playground-notice-description"
+              className="mt-2 text-sm leading-6 text-muted-foreground"
+            >
+              This project was built for the Solana India Fellowship. The hosted
+              deployment is a product playground, and API calls are not currently
+              running on deployment. To test the full Solana features, clone the
+              repository and start the localnet Anchor environment.
+            </p>
+          </div>
+        </div>
+
+        <label className="mt-6 flex items-start gap-3 rounded-lg border border-border p-3 text-sm leading-5">
+          <Checkbox
+            checked={acknowledged}
+            onCheckedChange={onAcknowledgedChange}
+            className="mt-0.5"
+          />
+          <span>
+            I understand this hosted version is a playground and localnet is
+            required for full feature testing.
+          </span>
+        </label>
+
+        <footer className="mt-6 flex justify-end">
+          <Button
+            type="button"
+            className="h-10 rounded-lg px-5"
+            disabled={!acknowledged}
+            onClick={onContinue}
+          >
+            Continue
+          </Button>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showPlaygroundNotice, setShowPlaygroundNotice] = useState(false);
+  const [hasAcknowledgedPlayground, setHasAcknowledgedPlayground] = useState(false);
   const [activeNav, setActiveNav] = useState<NavItem>("Dashboard");
   const [instances, setInstances] =
     useState<CompanyInstance[]>(initialInstances);
@@ -5148,6 +5218,7 @@ export default function HomePage() {
     if (params.get("login") === "1") {
       const frameId = window.requestAnimationFrame(() => {
         setIsLoggedIn(true);
+        setShowPlaygroundNotice(true);
       });
 
       return () => window.cancelAnimationFrame(frameId);
@@ -5160,14 +5231,23 @@ export default function HomePage() {
 
   if (activeNav === "Dashboard") {
     return (
-      <DashboardView
-        activeNav={activeNav}
-        setActiveNav={setActiveNav}
-        instances={visibleInstances}
-        setInstances={setInstances}
-        selectedAccountId={activeAccountId}
-        setSelectedAccountId={setSelectedAccountId}
-      />
+      <>
+        <DashboardView
+          activeNav={activeNav}
+          setActiveNav={setActiveNav}
+          instances={visibleInstances}
+          setInstances={setInstances}
+          selectedAccountId={activeAccountId}
+          setSelectedAccountId={setSelectedAccountId}
+        />
+        {showPlaygroundNotice ? (
+          <PlaygroundNoticeDialog
+            acknowledged={hasAcknowledgedPlayground}
+            onAcknowledgedChange={setHasAcknowledgedPlayground}
+            onContinue={() => setShowPlaygroundNotice(false)}
+          />
+        ) : null}
+      </>
     );
   }
 
