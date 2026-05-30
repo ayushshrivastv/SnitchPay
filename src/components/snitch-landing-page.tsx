@@ -230,7 +230,7 @@ function Hero({ onGoogleSignIn, onRequestAccess, googleAuthError }: LandingActio
   return (
     <section
       id="products"
-      className="snitch-side-grid border-b border-border bg-background"
+      className="border-b border-border bg-background"
     >
       <div className="snitch-grid mx-auto flex min-h-[462px] max-w-[1182px] flex-col items-center justify-center border-x border-border px-4 py-14 text-center sm:min-h-[380px] sm:px-6 sm:py-12 lg:px-8">
         <h1 className="mx-auto mb-4 max-w-[650px] text-[42px] font-medium leading-[1.06] text-foreground/75 sm:text-[58px] md:text-[64px]">
@@ -265,7 +265,7 @@ function Hero({ onGoogleSignIn, onRequestAccess, googleAuthError }: LandingActio
 
 function ProductSection() {
   return (
-    <section className="snitch-side-grid border-b border-border bg-background">
+    <section className="border-b border-border bg-background">
       <div className="snitch-grid mx-auto max-w-[1182px] border-x border-border shadow-[inset_0_2px_0_rgb(0_0_0/0.08)]">
         <FeatureTabs />
         <DashboardShot />
@@ -336,7 +336,7 @@ function DashboardShot() {
 
 function DeveloperSection() {
   return (
-    <section id="developers" className="snitch-side-grid border-b border-border bg-background">
+    <section id="developers" className="border-b border-border bg-background">
       <div className="snitch-grid mx-auto max-w-[1182px] border-x border-border px-4 py-16 sm:px-6 md:py-[74px] lg:px-8">
         <div className="mx-auto max-w-[910px]">
           <h2 className="mx-auto mb-4 max-w-[640px] text-center text-[32px] font-medium leading-[1.1] text-foreground md:text-[40px]">
