@@ -547,7 +547,7 @@ export function SnitchLandingPage({
   googleAuthError,
 }: LandingActionProps) {
   return (
-    <>
+    <div className="snitch-landing-scale">
       <AnnouncementBar />
       <Header onGoogleSignIn={onGoogleSignIn} />
       <main>
@@ -561,6 +561,6 @@ export function SnitchLandingPage({
         <LogoWall />
       </main>
       <Footer onRequestAccess={onRequestAccess} />
-    </>
+    </div>
   );
 }

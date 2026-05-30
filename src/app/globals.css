@@ -195,6 +195,20 @@ body {
 }
 
 @layer utilities {
+  .snitch-landing-scale {
+    transform-origin: top center;
+    zoom: 0.9;
+  }
+
+  @supports not (zoom: 1) {
+    .snitch-landing-scale {
+      inline-size: 111.111%;
+      margin-inline: calc((100% - 111.111%) / 2);
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
+  }
+
   .snitch-grid {
     background-image:
       linear-gradient(to right, var(--snitch-grid) 1px, transparent 1px),
