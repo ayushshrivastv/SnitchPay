@@ -1,12 +1,33 @@
-# SnitchPay
+# Snitch
 
-Open-source Solana stablecoin operations for invoices, payouts, shared wallets, and treasury vaults.
+Snitch is a SaaS platform that provides businesses with a secure stablecoin wallet infrastructure for managing on chain financial operations. Built on Solana, the platform enables companies to handle payments, payroll, vendor payouts, and treasury management through shared wallets with role based permissions and team access controls. Snitch streamlines stablecoin native finance workflows by giving organizations a centralized and collaborative system to manage stablecoin transactions efficiently at scale.
 
-SnitchPay is a stablecoin SaaS platform for businesses that need to manage on-chain financial operations with the controls they expect from modern finance software. It combines a Next.js product experience with Anchor-based Solana programs for USDC-style invoice settlement, vendor payouts, team permissions, and PDA-owned vault custody.
+The platform also integrates confidential settlement capabilities through Umbra on Solana to provide private checkout and payout infrastructure for businesses handling stablecoin transactions. This enables companies to process confidential payments while preserving the speed, transparency, and efficiency of blockchain based finance. Designed for startups, DAOs, and internet-native companies, Snitch combines enterprise grade controls with blockchain-native payment workflows to deliver a modern financial operations stack for the digital economy.
 
-[Setup](#quick-start) - [Solana verification](#solana-localnet-verification) - [Architecture](#architecture) - [Programs](#solana-programs) - [Services](#typescript-service-layer)
+<img width="800" height="722" alt="Screenshot 2026-05-21 at 9 38 59 PM" src="https://github.com/user-attachments/assets/7dc845e8-3365-4002-81ab-f66a38a9d981" />
 
----
+## Why It Exists
+
+Public blockchains are transparent by default. That is useful for verification, but it creates a problem for businesses: every payment can reveal customer relationships, treasury wallets, payout patterns, and sensitive financial metadata.
+
+Snitch explores a business-grade payment layer where merchants can still accept and reconcile Solana stablecoin payments while protecting sensitive payment relationships. The product goal is to make crypto payments feel closer to modern financial operations: private where needed, auditable where required, and simple enough for teams to use.
+
+## Confidential Payments With Umbra
+
+Snitch emphasizes confidential on-chain payments using Umbra. In a standard Solana transfer, a block explorer can often show the payer wallet, recipient wallet, amount, and transaction history. In Snitch's confidential checkout flow, the customer signs a payment through Umbra, and the merchant receives a receiver-claimable private payment state instead of a plain customer-to-treasury transfer row.
+
+<img width="800" height="725" alt="Screenshot 2026-05-21 at 9 40 39 PM" src="https://github.com/user-attachments/assets/594725a8-11db-457e-8e99-33cd8427a776" />
+
+The app's confidential transaction page explains the flow:
+
+1. The customer signs the payment from their Solana wallet.
+2. Umbra creates a private receiver-claimable payment note.
+3. A public explorer can see an Umbra program interaction, but not the direct business relationship behind the invoice.
+4. Snitch records the proof/signature and marks the invoice as paid for merchant reconciliation.
+
+Reference: [Umbra Privacy on Solana Explained](https://www.datawallet.com/crypto/umbra-privacy-on-solana-explained).
+
+<img width="800" height="724" alt="Screenshot 2026-05-21 at 9 40 55 PM" src="https://github.com/user-attachments/assets/0953f925-f05e-475e-9f8e-2dd2ffc9c962" />
 
 ## What is SnitchPay?
 
@@ -28,7 +49,7 @@ Businesses using stablecoins usually outgrow a single wallet quickly. They need 
 
 The goal is not only to show a frontend. The goal is to demonstrate a working Solana backend that can create financial records, move SPL tokens, enforce permissions, and prove behavior through Anchor tests.
 
----
+<img width="800" height="721" alt="Screenshot 2026-05-21 at 9 39 36 PM" src="https://github.com/user-attachments/assets/8e79283f-ff72-46a6-8a52-97407f1019e8" />
 
 ## Features
 
@@ -73,58 +94,6 @@ The frontend calls the TypeScript services. The services derive PDAs, construct 
 | Payout | `programs/payout` | Single payout, batch payout, recipient token transfers, memo/reference tracking, and payout records. | `tests/payout.ts` |
 | Shared wallet | `programs/shared_wallet` | Organization PDA creation, Owner/Admin/Member role management, and permission-gated vault transfers. | `tests/shared-wallet.ts` |
 | Vault | `programs/vault` | PDA-owned treasury vaults, deposits, authorized withdrawals, role checks, pause controls, and accounting. | `tests/vault.ts` |
-
-### Invoice Program
-
-The invoice program manages invoice state on-chain.
-
-It supports:
-
-- Invoice creation with amount, recipient, due date, memo, mint, and status
-- SPL token payment from payer token account to recipient token account
-- Cancellation for open invoices
-- Paid status tracking with payer and paid timestamp data
-
-### Payout Program
-
-The payout program executes and records outgoing stablecoin payments.
-
-It supports:
-
-- Single recipient payouts
-- Batch payouts using remaining recipient token accounts
-- Memo and reference ID fields for operational records
-- SPL token mint and token account validation
-- Payout status tracking
-
-### Shared Wallet Program
-
-The shared wallet program models organization-level permissions.
-
-It supports:
-
-- Organization PDA creation
-- Owner member initialization
-- Admin and Member role assignment
-- Role-gated member management
-- Role-gated transfer from organization-owned token vaults
-
-### Vault Program
-
-The vault program is the treasury custody layer. It uses PDA-owned SPL token accounts so funds are controlled by program authority instead of a normal wallet private key.
-
-It supports:
-
-- PDA vault initialization
-- PDA token vault creation
-- Owner, Admin, Member, and Viewer roles
-- Member deposits
-- Owner/Admin withdrawals
-- Unauthorized withdrawal rejection
-- Pause controls for deposits and withdrawals
-- Checked accounting for total deposited and withdrawn
-
----
 
 ## TypeScript Service Layer
 
@@ -431,16 +400,6 @@ target/
 
 Generated build artifacts, local validator ledgers, and secrets should not be committed.
 
----
-
-## Open Source Status
-
-SnitchPay is structured as an open-source-style Solana SaaS reference project. The codebase is organized so reviewers and contributors can inspect the product layer, service layer, on-chain programs, and tests independently.
-
-A formal `LICENSE` file is not currently included. Add one before accepting external contributions or using the repository for production distribution.
-
----
-
 ## Contributing
 
 Contributions should keep the same boundary used in the current project:
@@ -455,3 +414,5 @@ Contributions should keep the same boundary used in the current project:
 ## Capstone Verification Statement
 
 SnitchPay demonstrates a stablecoin SaaS workflow backed by real Solana program logic. The core qualification evidence is the Anchor localnet test suite, which runs program instructions against a local Solana validator and confirms invoice, payout, shared wallet, and vault flows end-to-end.
+
+### Solana India Fellowship ❤️
