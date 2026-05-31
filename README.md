@@ -1,43 +1,167 @@
-# Snitch
+# SnitchPay
 
-Snitch is a Solana stablecoin payment operations app for businesses that need private checkout, treasury payouts, payment records, and compliance context in one workflow.
+SnitchPay is a Solana stablecoin finance operations platform for businesses. It combines a merchant-facing payment operations dashboard with Anchor-based on-chain programs for invoices, payouts, shared wallet permissions, and PDA-owned treasury vaults.
 
-The project demonstrates how a merchant can create hosted stablecoin invoices, route sensitive payments through an Umbra-backed confidential payment path, manage payout operations, and keep audit-friendly records without exposing every customer-to-treasury relationship as a plain public transfer.
+The project is built as a capstone-grade Solana application: the UI demonstrates the business workflow, while the Anchor programs and tests verify the core stablecoin operations on Solana localnet.
 
-## What Snitch Does
+## Product Overview
 
-- Create Solana stablecoin invoices with customer, memo, due date, amount, terms, and treasury metadata.
-- Generate hosted checkout pages that customers can open from a payment link.
-- Let customers connect a Solana wallet and complete confidential invoice payments.
-- Route confidential payment flows through Umbra privacy infrastructure.
-- Track payment status, receipts, transaction signatures, and reconciliation context.
-- Explain confidential payments through a dedicated Umbra transaction explorer page.
-- Create treasury payouts to receiver wallets with memo, approval policy, and compliance checks.
-- Support admin-style team access controls for finance, support, analyst, and developer roles.
-- Provide a merchant dashboard for payment history, balances, payout operations, and activity review.
+Businesses that operate with stablecoins need more than a wallet. They need invoices, payouts, team permissions, treasury controls, payment records, and audit-friendly workflows. SnitchPay provides that operating layer for internet-native teams, startups, DAOs, and companies managing on-chain finance.
 
-## Why It Exists
+SnitchPay supports:
 
-Public blockchains are transparent by default. That is useful for verification, but it creates a problem for businesses: every payment can reveal customer relationships, treasury wallets, payout patterns, and sensitive financial metadata.
+- Stablecoin invoice creation and payment tracking
+- Single and batch USDC-style payouts
+- Organization wallets with Owner, Admin, and Member roles
+- PDA-owned vaults for treasury custody workflows
+- Hosted checkout and transaction pages
+- Confidential payment UX using Umbra-oriented flows
+- Firebase Google sign-in for the hosted playground experience
+- Localnet-verified Solana program tests
 
-Snitch explores a business-grade payment layer where merchants can still accept and reconcile Solana stablecoin payments while protecting sensitive payment relationships. The product goal is to make crypto payments feel closer to modern financial operations: private where needed, auditable where required, and simple enough for teams to use.
+## Current Project Scope
 
-## Confidential Payments With Umbra
+This repository contains both frontend and Solana backend code. The hosted deployment is a playground for reviewing the product experience. Full Solana feature testing should be done locally with Anchor and Solana localnet.
 
-Snitch emphasizes confidential on-chain payments using Umbra. In a standard Solana transfer, a block explorer can often show the payer wallet, recipient wallet, amount, and transaction history. In Snitch's confidential checkout flow, the customer signs a payment through Umbra, and the merchant receives a receiver-claimable private payment state instead of a plain customer-to-treasury transfer row.
+The localnet test suite is the source of truth for verified on-chain behavior.
 
-The app's confidential transaction page explains the flow:
+## Architecture
 
-1. The customer signs the payment from their Solana wallet.
-2. Umbra creates a private receiver-claimable payment note.
-3. A public explorer can see an Umbra program interaction, but not the direct business relationship behind the invoice.
-4. Snitch records the proof/signature and marks the invoice as paid for merchant reconciliation.
+```text
+Next.js app
+  User-facing dashboard, checkout, payout, wallet, and playground flows
 
-Reference: [Umbra Privacy on Solana Explained](https://www.datawallet.com/crypto/umbra-privacy-on-solana-explained).
+TypeScript service layer
+  Frontend-safe functions for calling Anchor instructions
 
-## Demo Scope
+Anchor programs
+  Invoice, payout, shared wallet, and vault programs
 
-This is a demo/prototype application. Some invoice and encryption metadata is represented as demo state, and the app includes explicit test-data disclaimers in the API response layer. Configure real treasury wallets, supported mints, RPC endpoints, recipient registration, and operational controls before using any payment flow beyond a demo environment.
+Anchor tests
+  Localnet verification for SPL token transfers, PDAs, roles, and vault controls
+```
+
+## Solana Programs
+
+### Invoice Program
+
+Path: `programs/invoice`
+
+The invoice program manages invoice state on-chain.
+
+It supports:
+
+- Creating invoices with amount, recipient, due date, memo, mint, and status
+- Paying invoices through SPL token transfer
+- Cancelling open invoices
+- Marking invoice status as paid
+- Storing payer and paid timestamp data
+
+Verified by: `tests/invoice.ts`
+
+### Payout Program
+
+Path: `programs/payout`
+
+The payout program handles stablecoin payout execution and records.
+
+It supports:
+
+- Single recipient payouts
+- Batch payouts to multiple recipients
+- Memo and reference ID tracking
+- Payout record accounts
+- SPL token account and mint validation
+
+Verified by: `tests/payout.ts`
+
+### Shared Wallet Program
+
+Path: `programs/shared_wallet`
+
+The shared wallet program models organization-level access controls.
+
+It supports:
+
+- Organization PDA creation
+- Owner member initialization
+- Admin and Member roles
+- Role-gated member management
+- Role-gated transfer from organization-owned token vaults
+
+Verified by: `tests/shared-wallet.ts`
+
+### Vault Program
+
+Path: `programs/vault`
+
+The vault program is the treasury custody layer. It uses PDA-owned SPL token accounts so funds are controlled by program authority rather than a normal wallet private key.
+
+It supports:
+
+- PDA vault initialization
+- PDA vault token account creation
+- Owner, Admin, Member, and Viewer roles
+- Member deposits
+- Owner/Admin withdrawals
+- Unauthorized withdrawal rejection
+- Pause controls for deposits and withdrawals
+- Checked accounting for total deposited and withdrawn
+
+Verified by: `tests/vault.ts`
+
+## TypeScript Integration Layer
+
+The service layer exposes typed helpers for the frontend and future API routes.
+
+```text
+services/solana.ts
+  Connection, program IDs, wallet resolution, provider setup, amount parsing
+
+services/idl.ts
+  Client-side Anchor IDL definitions
+
+services/invoice.ts
+  createInvoice, payInvoice, cancelInvoice, fetchInvoice
+
+services/payout.ts
+  sendPayout, sendBatchPayout, fetchPayoutHistory
+
+services/shared-wallet.ts
+  organization wallet and member permission helpers
+
+services/vault.ts
+  vault initialization, member management, deposit, withdraw, pause, fetch helpers
+```
+
+## Frontend Application
+
+The frontend is built with Next.js and TypeScript.
+
+Important paths:
+
+```text
+src/app/page.tsx
+  Main dashboard, landing page, wallet page, invoice/payout flows, playground notice
+
+src/app/transactions/[account]/[shareId]/[invoiceId]/page.tsx
+  Public invoice checkout page
+
+src/app/transactions/[account]/[shareId]/[invoiceId]/explorer/page.tsx
+  Transaction explorer-style page
+
+src/app/api/confidential-invoices/route.ts
+  Demo confidential invoice API route
+
+src/app/api/payments/confirm/route.ts
+  Demo payment confirmation route
+
+src/app/api/payments/status/route.ts
+  Demo payment status route
+
+src/app/api/send-receipt/route.ts
+  Demo receipt delivery route
+```
 
 ## Tech Stack
 
@@ -45,47 +169,60 @@ This is a demo/prototype application. Some invoice and encryption metadata is re
 - React 19
 - TypeScript
 - Tailwind CSS
+- Firebase Auth
 - Solana Web3.js
-- Solana SPL Token
-- Solana wallet adapters for Phantom, Solflare, and wallet-standard wallets
+- SPL Token
+- Anchor 0.31.1
+- Rust Anchor programs
 - Umbra SDK and web ZK prover packages
-- Resend API route support for receipt/payment-link emails
+- Resend API route support
 
-## Project Structure
+## Prerequisites
 
-```text
-src/app/page.tsx
-  Main product experience, merchant dashboard, invoice creation, payout creation, and access controls.
+Install the following before running the full project:
 
-src/app/api/confidential-invoices/route.ts
-  Creates invoice payloads and privacy/payment metadata for the UI.
+- Node.js 20 or newer
+- npm
+- Rust
+- Solana CLI / Agave CLI
+- Anchor CLI 0.31.1
 
-src/app/api/payments/confirm/route.ts
-  Records confirmed payment signatures and invoice completion state.
+Check your local toolchain:
 
-src/app/api/payments/status/route.ts
-  Returns payment status for dashboard polling.
-
-src/app/api/send-receipt/route.ts
-  Builds and sends hosted checkout/payment-link email content.
-
-src/app/transactions/[account]/[shareId]/[invoiceId]/
-  Hosted invoice and customer payment experience.
-
-src/app/transactions/[account]/[shareId]/[invoiceId]/explorer/
-  Umbra confidential transaction explanation view.
-
-src/lib/payment-confirmations.ts
-  In-memory demo payment confirmation store.
+```bash
+node --version
+npm --version
+solana --version
+anchor --version
+cargo build-sbf --version
 ```
 
-## Environment Variables
+## Setup
 
-Create `.env.local` from `.env.example` and fill the values needed for your demo:
+Clone the repository:
+
+```bash
+git clone git@github.com:ayushshrivastv/SnitchPay.git
+cd SnitchPay
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local environment file:
 
 ```bash
 cp .env.example .env.local
 ```
+
+Update `.env.local` as needed for your local wallet, RPC, Firebase, and API keys.
+
+## Environment Variables
+
+The repository includes `.env.example` with the variables used by the app.
 
 ```env
 RESEND_API_KEY=
@@ -97,41 +234,178 @@ NEXT_PUBLIC_USDC_MINT=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
 NEXT_PUBLIC_USDT_MINT=
 NEXT_PUBLIC_USDG_MINT=
 NEXT_PUBLIC_PALM_USD_MINT=
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+NEXT_PUBLIC_SNITCH_VAULT_PROGRAM_ID=
 ```
 
-Do not commit real secrets. Keep production keys and private configuration in your deployment environment.
+Do not commit real private keys or server-side secrets. Firebase public web config values are safe to expose, but Firebase security rules and authorized domains must still be configured correctly in Firebase Console.
 
-## Getting Started
+## Run the Frontend
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the local development server:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Open the app:
+Open:
 
 ```text
 http://localhost:3000
 ```
 
-## Scripts
+Build the production app:
 
 ```bash
-npm run dev
 npm run build
-npm run start
-npm run lint
 ```
 
-## Demo Narrative
+Start a production build:
 
-Snitch is built for businesses that want Solana stablecoin payments without exposing every payment relationship publicly. A merchant can create an invoice, enable confidential payments, send a hosted checkout link, and let the customer pay privately through Umbra. After payment, Snitch keeps the merchant-facing records needed for reconciliation, receipts, and audit review while the public chain view avoids a plain customer-wallet-to-merchant-wallet transfer trail.
+```bash
+npm run start
+```
 
-The broader product vision is private, compliant payment operations for internet-native businesses: stablecoin checkout, treasury controls, confidential payouts, and clear records in one place.
+## Verify the Solana Programs
+
+Run the complete localnet test suite:
+
+```bash
+anchor test --provider.cluster localnet
+```
+
+Expected result:
+
+```text
+8 passing
+```
+
+The suite verifies:
+
+- Invoice creation
+- Invoice SPL token payment
+- Invoice cancellation
+- Single payout
+- Batch payout
+- Shared wallet role-based transfer
+- Vault initialization
+- Vault deposits
+- Vault authorized withdrawals
+- Vault unauthorized withdrawal rejection
+- Vault pause protection
+
+Run only vault tests:
+
+```bash
+anchor test --provider.cluster localnet --run tests/vault.ts
+```
+
+Expected vault output:
+
+```text
+vault
+  ✔ initializes a PDA vault, accepts deposits, and withdraws by owner
+  ✔ allows members to deposit but blocks member withdrawals
+  ✔ prevents deposits and withdrawals while the vault is paused
+```
+
+## Build Anchor Programs
+
+Build all Anchor programs:
+
+```bash
+anchor build
+```
+
+The programs are configured in `Anchor.toml` for localnet and devnet:
+
+```text
+invoice
+payout
+shared_wallet
+vault
+```
+
+## Devnet Notes
+
+The repository is configured with devnet program IDs, but the verified execution path is localnet. To deploy or test on devnet, make sure your Solana CLI wallet has enough devnet SOL:
+
+```bash
+solana config set --url devnet
+solana balance
+anchor deploy --provider.cluster devnet
+```
+
+If deployment fails with an insufficient funds error, request devnet SOL or use a funded devnet wallet.
+
+## Firebase Auth Notes
+
+The landing page includes Google sign-in through Firebase. For production or preview deployments, add your deployed host to Firebase Authentication authorized domains:
+
+```text
+Firebase Console -> Authentication -> Settings -> Authorized domains
+```
+
+For local demos, use:
+
+```text
+localhost
+127.0.0.1
+```
+
+The app includes a local playground fallback so the capstone demo can continue if Firebase rejects a local unauthorized domain.
+
+## Hosted Playground Notice
+
+After login, users see a required acknowledgement modal explaining that:
+
+- SnitchPay was built for the Solana India Fellowship
+- The hosted deployment is a playground
+- Full feature testing requires cloning the repository and running Solana localnet
+
+This keeps the hosted demo honest while still allowing reviewers to inspect the product experience.
+
+## Useful Commands
+
+```bash
+# Frontend
+npm install
+npm run dev
+npm run build
+npm run lint
+
+# Solana / Anchor
+anchor build
+anchor test --provider.cluster localnet
+anchor test --provider.cluster localnet --run tests/vault.ts
+
+# Toolchain checks
+solana --version
+anchor --version
+cargo build-sbf --version
+```
+
+## Repository Hygiene
+
+The following are intentionally ignored:
+
+```text
+node_modules/
+.next/
+target/
+.anchor/
+.env.local
+*.tsbuildinfo
+```
+
+Generated build artifacts, local validator ledgers, and secrets should not be committed.
+
+## Capstone Verification Statement
+
+SnitchPay demonstrates a stablecoin SaaS workflow backed by real Solana program logic. The strongest verification artifact is the Anchor localnet test suite, which runs program instructions against a local Solana validator and confirms the invoice, payout, shared wallet, and vault flows end-to-end.
